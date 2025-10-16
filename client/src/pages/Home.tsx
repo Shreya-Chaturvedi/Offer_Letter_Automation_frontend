@@ -1,39 +1,46 @@
-import { useState } from 'react';
-import { useLocation } from 'wouter';
-import { FileText, LogOut, Loader2, Calendar } from 'lucide-react';
-import { getCurrentUser, logout } from '@/utils/auth';
-import { ResumeUpload } from '@/components/ResumeUpload';
-import { Alert } from '@/components/Alert';
-import { offerLetterSchema, type OfferLetterData, type WebhookPayload } from '@shared/schema';
+import { useState } from "react";
+import { useLocation } from "wouter";
+import { FileText, LogOut, Loader2, Calendar } from "lucide-react";
+import { getCurrentUser, logout } from "@/utils/auth";
+import { ResumeUpload } from "@/components/ResumeUpload";
+import { Alert } from "@/components/Alert";
+import {
+  offerLetterSchema,
+  type OfferLetterData,
+  type WebhookPayload,
+} from "@shared/schema";
 
 export default function Home() {
   const [, setLocation] = useLocation();
   const currentUser = getCurrentUser();
 
   const [formData, setFormData] = useState({
-    candidateName: '',
-    designation: '',
-    reportingManager: '',
-    timings: '',
-    department: '',
-    probationPeriod: '',
-    roleResponsibilities: '',
-    ctc: '',
-    salarySheet: '',
-    dateOfOffer: '',
-    studentSignature: '',
-    resumeBase64: '',
-    resumeFileName: '',
+    candidateName: "",
+    designation: "",
+    reportingManager: "",
+    timings: "",
+    department: "",
+    probationPeriod: "",
+    roleResponsibilities: "",
+    ctc: "",
+    salarySheet: "",
+    dateOfOffer: "",
+    studentSignature: "",
+    resumeBase64: "",
+    resumeFileName: "",
     resumeFileSize: 0,
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [alert, setAlert] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [alert, setAlert] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
 
   const handleLogout = () => {
     logout();
-    setLocation('/login');
+    setLocation("/login");
   };
 
   const handleInputChange = (
@@ -50,7 +57,11 @@ export default function Home() {
     }
   };
 
-  const handleResumeUpload = (base64: string, fileName: string, fileSize: number) => {
+  const handleResumeUpload = (
+    base64: string,
+    fileName: string,
+    fileSize: number
+  ) => {
     setFormData((prev) => ({
       ...prev,
       resumeBase64: base64,
@@ -79,10 +90,10 @@ export default function Home() {
         fieldErrors[field] = err.message;
       });
       setErrors(fieldErrors);
-      
+
       const firstError = document.querySelector('[aria-invalid="true"]');
-      firstError?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      
+      firstError?.scrollIntoView({ behavior: "smooth", block: "center" });
+
       return;
     }
 
@@ -106,43 +117,46 @@ export default function Home() {
         },
       };
 
-      const response = await fetch('/api/submit-offer-letter', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        "http://localhost:5000/api/submit-offer-letter",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
 
       if (response.ok) {
         setAlert({
-          type: 'success',
-          message: 'Offer letter submitted successfully!',
+          type: "success",
+          message: "Offer letter submitted successfully!",
         });
-        
+
         setFormData({
-          candidateName: '',
-          designation: '',
-          reportingManager: '',
-          timings: '',
-          department: '',
-          probationPeriod: '',
-          roleResponsibilities: '',
-          ctc: '',
-          salarySheet: '',
-          dateOfOffer: '',
-          studentSignature: '',
-          resumeBase64: '',
-          resumeFileName: '',
+          candidateName: "",
+          designation: "",
+          reportingManager: "",
+          timings: "",
+          department: "",
+          probationPeriod: "",
+          roleResponsibilities: "",
+          ctc: "",
+          salarySheet: "",
+          dateOfOffer: "",
+          studentSignature: "",
+          resumeBase64: "",
+          resumeFileName: "",
           resumeFileSize: 0,
         });
       } else {
-        throw new Error('Failed to submit offer letter');
+        throw new Error("Failed to submit offer letter");
       }
     } catch (error) {
       setAlert({
-        type: 'error',
-        message: 'Failed to submit offer letter. Please try again.',
+        type: "error",
+        message: "Failed to submit offer letter. Please try again.",
       });
     } finally {
       setIsSubmitting(false);
@@ -155,10 +169,15 @@ export default function Home() {
         <div className="h-full px-6 flex items-center justify-between max-w-7xl mx-auto">
           <div className="flex items-center gap-2">
             <FileText className="w-6 h-6 text-primary" />
-            <h1 className="text-lg font-semibold text-foreground">Offer Letter Automation</h1>
+            <h1 className="text-lg font-semibold text-foreground">
+              Offer Letter Automation
+            </h1>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground" data-testid="text-username">
+            <span
+              className="text-sm text-muted-foreground"
+              data-testid="text-username"
+            >
               {currentUser}
             </span>
             <button
@@ -179,7 +198,8 @@ export default function Home() {
             Create Offer Letter
           </h2>
           <p className="text-base text-muted-foreground">
-            Upload candidate resume and fill in the details to generate an offer letter
+            Upload candidate resume and fill in the details to generate an offer
+            letter
           </p>
         </div>
 
@@ -196,23 +216,34 @@ export default function Home() {
 
             <div className="lg:col-span-2 space-y-8">
               <div className="bg-card rounded-xl p-6 md:p-8 border border-card-border">
-                <h3 className="text-lg font-medium text-foreground mb-6">Personal Information</h3>
+                <h3 className="text-lg font-medium text-foreground mb-6">
+                  Personal Information
+                </h3>
                 <div className="space-y-6">
                   <div>
-                    <label htmlFor="candidateName" className="block text-sm font-medium text-foreground mb-2">
+                    <label
+                      htmlFor="candidateName"
+                      className="block text-sm font-medium text-foreground mb-2"
+                    >
                       Candidate Name <span className="text-destructive">*</span>
                     </label>
                     <input
                       id="candidateName"
                       type="text"
                       value={formData.candidateName}
-                      onChange={(e) => handleInputChange('candidateName', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("candidateName", e.target.value)
+                      }
                       className={`
                         w-full h-12 px-4 rounded-lg border-2 bg-background
                         text-foreground placeholder:text-muted-foreground
                         transition-all duration-200
                         focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2
-                        ${errors.candidateName ? 'border-destructive' : 'border-input'}
+                        ${
+                          errors.candidateName
+                            ? "border-destructive"
+                            : "border-input"
+                        }
                       `}
                       placeholder="Enter candidate's full name"
                       aria-invalid={!!errors.candidateName}
@@ -226,23 +257,33 @@ export default function Home() {
                   </div>
 
                   <div>
-                    <label htmlFor="studentSignature" className="block text-sm font-medium text-foreground mb-2">
-                      Student Signature <span className="text-destructive">*</span>
+                    <label
+                      htmlFor="studentSignature"
+                      className="block text-sm font-medium text-foreground mb-2"
+                    >
+                      Student Signature{" "}
+                      <span className="text-destructive">*</span>
                     </label>
                     <input
                       id="studentSignature"
                       type="text"
                       value={formData.studentSignature}
-                      onChange={(e) => handleInputChange('studentSignature', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("studentSignature", e.target.value)
+                      }
                       className={`
                         w-full h-12 px-4 rounded-lg border-2 bg-background
                         text-foreground placeholder:text-muted-foreground
                         transition-all duration-200
                         focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2
-                        ${errors.studentSignature ? 'border-destructive' : 'border-input'}
+                        ${
+                          errors.studentSignature
+                            ? "border-destructive"
+                            : "border-input"
+                        }
                       `}
                       placeholder="Enter signature name"
-                      style={{ borderBottomStyle: 'dotted' }}
+                      style={{ borderBottomStyle: "dotted" }}
                       aria-invalid={!!errors.studentSignature}
                       data-testid="input-student-signature"
                     />
@@ -259,23 +300,34 @@ export default function Home() {
               </div>
 
               <div className="bg-card rounded-xl p-6 md:p-8 border border-card-border">
-                <h3 className="text-lg font-medium text-foreground mb-6">Job Details</h3>
+                <h3 className="text-lg font-medium text-foreground mb-6">
+                  Job Details
+                </h3>
                 <div className="space-y-6">
                   <div>
-                    <label htmlFor="designation" className="block text-sm font-medium text-foreground mb-2">
+                    <label
+                      htmlFor="designation"
+                      className="block text-sm font-medium text-foreground mb-2"
+                    >
                       Designation <span className="text-destructive">*</span>
                     </label>
                     <input
                       id="designation"
                       type="text"
                       value={formData.designation}
-                      onChange={(e) => handleInputChange('designation', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("designation", e.target.value)
+                      }
                       className={`
                         w-full h-12 px-4 rounded-lg border-2 bg-background
                         text-foreground placeholder:text-muted-foreground
                         transition-all duration-200
                         focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2
-                        ${errors.designation ? 'border-destructive' : 'border-input'}
+                        ${
+                          errors.designation
+                            ? "border-destructive"
+                            : "border-input"
+                        }
                       `}
                       placeholder="e.g., Software Engineer"
                       aria-invalid={!!errors.designation}
@@ -289,20 +341,29 @@ export default function Home() {
                   </div>
 
                   <div>
-                    <label htmlFor="department" className="block text-sm font-medium text-foreground mb-2">
+                    <label
+                      htmlFor="department"
+                      className="block text-sm font-medium text-foreground mb-2"
+                    >
                       Department <span className="text-destructive">*</span>
                     </label>
                     <input
                       id="department"
                       type="text"
                       value={formData.department}
-                      onChange={(e) => handleInputChange('department', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("department", e.target.value)
+                      }
                       className={`
                         w-full h-12 px-4 rounded-lg border-2 bg-background
                         text-foreground placeholder:text-muted-foreground
                         transition-all duration-200
                         focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2
-                        ${errors.department ? 'border-destructive' : 'border-input'}
+                        ${
+                          errors.department
+                            ? "border-destructive"
+                            : "border-input"
+                        }
                       `}
                       placeholder="e.g., Engineering"
                       aria-invalid={!!errors.department}
@@ -316,20 +377,30 @@ export default function Home() {
                   </div>
 
                   <div>
-                    <label htmlFor="reportingManager" className="block text-sm font-medium text-foreground mb-2">
-                      Reporting Manager <span className="text-destructive">*</span>
+                    <label
+                      htmlFor="reportingManager"
+                      className="block text-sm font-medium text-foreground mb-2"
+                    >
+                      Reporting Manager{" "}
+                      <span className="text-destructive">*</span>
                     </label>
                     <input
                       id="reportingManager"
                       type="text"
                       value={formData.reportingManager}
-                      onChange={(e) => handleInputChange('reportingManager', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("reportingManager", e.target.value)
+                      }
                       className={`
                         w-full h-12 px-4 rounded-lg border-2 bg-background
                         text-foreground placeholder:text-muted-foreground
                         transition-all duration-200
                         focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2
-                        ${errors.reportingManager ? 'border-destructive' : 'border-input'}
+                        ${
+                          errors.reportingManager
+                            ? "border-destructive"
+                            : "border-input"
+                        }
                       `}
                       placeholder="Enter manager's name"
                       aria-invalid={!!errors.reportingManager}
@@ -343,20 +414,28 @@ export default function Home() {
                   </div>
 
                   <div>
-                    <label htmlFor="timings" className="block text-sm font-medium text-foreground mb-2">
-                      Timings (Working Hours) <span className="text-destructive">*</span>
+                    <label
+                      htmlFor="timings"
+                      className="block text-sm font-medium text-foreground mb-2"
+                    >
+                      Timings (Working Hours){" "}
+                      <span className="text-destructive">*</span>
                     </label>
                     <input
                       id="timings"
                       type="text"
                       value={formData.timings}
-                      onChange={(e) => handleInputChange('timings', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("timings", e.target.value)
+                      }
                       className={`
                         w-full h-12 px-4 rounded-lg border-2 bg-background
                         text-foreground placeholder:text-muted-foreground
                         transition-all duration-200
                         focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2
-                        ${errors.timings ? 'border-destructive' : 'border-input'}
+                        ${
+                          errors.timings ? "border-destructive" : "border-input"
+                        }
                       `}
                       placeholder="e.g., 9:00 AM - 6:00 PM"
                       aria-invalid={!!errors.timings}
@@ -370,20 +449,30 @@ export default function Home() {
                   </div>
 
                   <div>
-                    <label htmlFor="probationPeriod" className="block text-sm font-medium text-foreground mb-2">
-                      Probation Period <span className="text-destructive">*</span>
+                    <label
+                      htmlFor="probationPeriod"
+                      className="block text-sm font-medium text-foreground mb-2"
+                    >
+                      Probation Period{" "}
+                      <span className="text-destructive">*</span>
                     </label>
                     <input
                       id="probationPeriod"
                       type="text"
                       value={formData.probationPeriod}
-                      onChange={(e) => handleInputChange('probationPeriod', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("probationPeriod", e.target.value)
+                      }
                       className={`
                         w-full h-12 px-4 rounded-lg border-2 bg-background
                         text-foreground placeholder:text-muted-foreground
                         transition-all duration-200
                         focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2
-                        ${errors.probationPeriod ? 'border-destructive' : 'border-input'}
+                        ${
+                          errors.probationPeriod
+                            ? "border-destructive"
+                            : "border-input"
+                        }
                       `}
                       placeholder="e.g., 3 months"
                       aria-invalid={!!errors.probationPeriod}
@@ -397,20 +486,33 @@ export default function Home() {
                   </div>
 
                   <div>
-                    <label htmlFor="roleResponsibilities" className="block text-sm font-medium text-foreground mb-2">
-                      Core Role & Responsibilities <span className="text-destructive">*</span>
+                    <label
+                      htmlFor="roleResponsibilities"
+                      className="block text-sm font-medium text-foreground mb-2"
+                    >
+                      Core Role & Responsibilities{" "}
+                      <span className="text-destructive">*</span>
                     </label>
                     <textarea
                       id="roleResponsibilities"
                       value={formData.roleResponsibilities}
-                      onChange={(e) => handleInputChange('roleResponsibilities', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "roleResponsibilities",
+                          e.target.value
+                        )
+                      }
                       rows={6}
                       className={`
                         w-full px-4 py-3 rounded-lg border-2 bg-background
                         text-foreground placeholder:text-muted-foreground
                         transition-all duration-200 resize-vertical min-h-32
                         focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2
-                        ${errors.roleResponsibilities ? 'border-destructive' : 'border-input'}
+                        ${
+                          errors.roleResponsibilities
+                            ? "border-destructive"
+                            : "border-input"
+                        }
                       `}
                       placeholder="Describe the key responsibilities and expectations for this role..."
                       aria-invalid={!!errors.roleResponsibilities}
@@ -426,23 +528,29 @@ export default function Home() {
               </div>
 
               <div className="bg-card rounded-xl p-6 md:p-8 border border-card-border">
-                <h3 className="text-lg font-medium text-foreground mb-6">Compensation</h3>
+                <h3 className="text-lg font-medium text-foreground mb-6">
+                  Compensation
+                </h3>
                 <div className="space-y-6">
                   <div>
-                    <label htmlFor="ctc" className="block text-sm font-medium text-foreground mb-2">
-                      Compensation (CTC) <span className="text-destructive">*</span>
+                    <label
+                      htmlFor="ctc"
+                      className="block text-sm font-medium text-foreground mb-2"
+                    >
+                      Compensation (CTC){" "}
+                      <span className="text-destructive">*</span>
                     </label>
                     <input
                       id="ctc"
                       type="text"
                       value={formData.ctc}
-                      onChange={(e) => handleInputChange('ctc', e.target.value)}
+                      onChange={(e) => handleInputChange("ctc", e.target.value)}
                       className={`
                         w-full h-12 px-4 rounded-lg border-2 bg-background
                         text-foreground placeholder:text-muted-foreground
                         transition-all duration-200
                         focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2
-                        ${errors.ctc ? 'border-destructive' : 'border-input'}
+                        ${errors.ctc ? "border-destructive" : "border-input"}
                       `}
                       placeholder="e.g., $80,000 per annum"
                       aria-invalid={!!errors.ctc}
@@ -456,20 +564,29 @@ export default function Home() {
                   </div>
 
                   <div>
-                    <label htmlFor="salarySheet" className="block text-sm font-medium text-foreground mb-2">
+                    <label
+                      htmlFor="salarySheet"
+                      className="block text-sm font-medium text-foreground mb-2"
+                    >
                       Salary Sheet <span className="text-destructive">*</span>
                     </label>
                     <textarea
                       id="salarySheet"
                       value={formData.salarySheet}
-                      onChange={(e) => handleInputChange('salarySheet', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("salarySheet", e.target.value)
+                      }
                       rows={4}
                       className={`
                         w-full px-4 py-3 rounded-lg border-2 bg-background
                         text-foreground placeholder:text-muted-foreground
                         transition-all duration-200 resize-vertical min-h-32
                         focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2
-                        ${errors.salarySheet ? 'border-destructive' : 'border-input'}
+                        ${
+                          errors.salarySheet
+                            ? "border-destructive"
+                            : "border-input"
+                        }
                       `}
                       placeholder="Provide detailed salary breakdown (base, bonuses, benefits, etc.)"
                       aria-invalid={!!errors.salarySheet}
@@ -485,23 +602,35 @@ export default function Home() {
               </div>
 
               <div className="bg-card rounded-xl p-6 md:p-8 border border-card-border">
-                <h3 className="text-lg font-medium text-foreground mb-6">Additional Information</h3>
+                <h3 className="text-lg font-medium text-foreground mb-6">
+                  Additional Information
+                </h3>
                 <div>
-                  <label htmlFor="dateOfOffer" className="block text-sm font-medium text-foreground mb-2">
-                    Date of Offer Letter <span className="text-destructive">*</span>
+                  <label
+                    htmlFor="dateOfOffer"
+                    className="block text-sm font-medium text-foreground mb-2"
+                  >
+                    Date of Offer Letter{" "}
+                    <span className="text-destructive">*</span>
                   </label>
                   <div className="relative">
                     <input
                       id="dateOfOffer"
                       type="date"
                       value={formData.dateOfOffer}
-                      onChange={(e) => handleInputChange('dateOfOffer', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("dateOfOffer", e.target.value)
+                      }
                       className={`
                         w-full h-12 px-4 rounded-lg border-2 bg-background
                         text-foreground
                         transition-all duration-200
                         focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2
-                        ${errors.dateOfOffer ? 'border-destructive' : 'border-input'}
+                        ${
+                          errors.dateOfOffer
+                            ? "border-destructive"
+                            : "border-input"
+                        }
                       `}
                       aria-invalid={!!errors.dateOfOffer}
                       data-testid="input-date-of-offer"
@@ -529,26 +658,26 @@ export default function Home() {
                       Processing...
                     </>
                   ) : (
-                    'Submit Offer Letter'
+                    "Submit Offer Letter"
                   )}
                 </button>
                 <button
                   type="button"
                   onClick={() => {
                     setFormData({
-                      candidateName: '',
-                      designation: '',
-                      reportingManager: '',
-                      timings: '',
-                      department: '',
-                      probationPeriod: '',
-                      roleResponsibilities: '',
-                      ctc: '',
-                      salarySheet: '',
-                      dateOfOffer: '',
-                      studentSignature: '',
-                      resumeBase64: '',
-                      resumeFileName: '',
+                      candidateName: "",
+                      designation: "",
+                      reportingManager: "",
+                      timings: "",
+                      department: "",
+                      probationPeriod: "",
+                      roleResponsibilities: "",
+                      ctc: "",
+                      salarySheet: "",
+                      dateOfOffer: "",
+                      studentSignature: "",
+                      resumeBase64: "",
+                      resumeFileName: "",
                       resumeFileSize: 0,
                     });
                     setErrors({});

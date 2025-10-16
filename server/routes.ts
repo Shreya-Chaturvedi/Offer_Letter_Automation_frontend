@@ -20,8 +20,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const payload = validationResult.data;
 
       // n8n webhook URL - can be configured via environment variable
-      const webhookUrl = process.env.N8N_WEBHOOK_URL || "";
-
+      const webhookUrl = process.env.N8N_WEBHOOK_URL
       // If no webhook URL is configured, simulate success for demo/testing
       if (!webhookUrl || webhookUrl === "https://your-n8n-url/webhook/offer-letter") {
         console.log("No n8n webhook configured - simulating success for demo");
@@ -56,7 +55,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
         return res.status(200).json({
           success: true,
-          message: "Offer letter submitted successfully",
+          message: "Offer letter data submitted successfully",
           data: result,
         });
       } catch (fetchError) {
